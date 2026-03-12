@@ -98,7 +98,7 @@ export const About = () => {
           </div>
           
           <div style={{ marginTop: '2rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ fontSize: '3rem', fontWeight: 'bold', color: 'white' }}>0+</div>
+            <div style={{ fontSize: '3rem', fontWeight: 'bold', color: 'white' }}>10+</div>
             <div style={{ color: 'var(--text-secondary)' }}>Projects<br/>Completed</div>
           </div>
         </motion.div>
