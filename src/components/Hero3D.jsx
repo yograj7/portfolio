@@ -1,13 +1,17 @@
-import { Suspense, useRef, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Points, PointMaterial, Preload, Float } from '@react-three/drei';
-import * as random from 'maath/random/dist/maath-random.esm';
+import { Suspense, useRef, useState, useEffect } from 'react';
 
-const FloatingParticles = (props) => {
+// Dynamically load three/fiber/drei to split vendor chunk
+
+// These components will be created once the heavy modules are loaded
+const FloatingParticles = ({ Points, PointMaterial, useFrame, random, ...props }) => {
   const ref = useRef();
-  const [sphere] = useState(() => random.inSphere(new Float32Array(5000), { radius: 1.5 }));
+  const particleCount = typeof navigator !== 'undefined' && navigator.hardwareConcurrency
+    ? Math.min(5000, navigator.hardwareConcurrency * navigator.hardwareConcurrency)
+    : 2000;
+  const [sphere] = useState(() => random.inSphere(new Float32Array(particleCount * 3), { radius: 1.5 }));
 
   useFrame((state, delta) => {
+    if (!ref.current) return;
     ref.current.rotation.x -= delta / 10;
     ref.current.rotation.y -= delta / 15;
   });
@@ -28,10 +32,11 @@ const FloatingParticles = (props) => {
 };
 
 // Abstract shapes floating in the background
-const AbstractShape = ({ position, rotation, scale, color }) => {
+const AbstractShape = ({ Float, useFrame, position, rotation, scale, color }) => {
   const mesh = useRef();
   
   useFrame((state, delta) => {
+    if (!mesh.current) return;
     mesh.current.rotation.x += delta * 0.2;
     mesh.current.rotation.y += delta * 0.3;
   });
@@ -52,16 +57,48 @@ const AbstractShape = ({ position, rotation, scale, color }) => {
 };
 
 const Hero3D = () => {
-  return (
-    <div className="canvas-container">
-      <Canvas camera={{ position: [0, 0, 3] }}>
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[10, 10, 5]} intensity={1} color="#6366f1" />
-        <directionalLight position={[-10, -10, -5]} intensity={0.5} color="#a0a0a0" />
-        <Suspense fallback={null}>
-          <FloatingParticles />
-          <AbstractShape position={[2, 1, -2]} rotation={[0.4, 0.2, 0.1]} scale={0.8} color="#6366f1" />
-          <AbstractShape position={[-2, -1, -1]} rotation={[-0.4, 0.5, 0.2]} scale={1.2} color="#ffffff" />
+  useEffect(() => {
+    // ensure small devicePixelRatio for performance
+    if (typeof window !== 'undefined') {
+      const Hero3D = () => {
+        const [mods, setMods] = useState(null);
+
+        useEffect(() => {
+          let mounted = true;
+          // dynamic import to split vendor chunk
+          Promise.all([
+            import('@react-three/fiber'),
+            import('@react-three/drei'),
+            import('maath/random/dist/maath-random.esm')
+          ]).then(([fiber, drei, random]) => {
+            if (mounted) setMods({ fiber, drei, random });
+          }).catch(() => {});
+          return () => { mounted = false; };
+        }, []);
+
+        if (!mods) return null;
+
+        const { Canvas, useFrame } = mods.fiber;
+        const { Points, PointMaterial, Preload, Float } = mods.drei;
+        const randomLib = mods.random;
+
+        return (
+          <div className="canvas-container">
+            <Canvas camera={{ position: [0, 0, 3] }} frameloop="demand">
+              <ambientLight intensity={0.5} />
+              <directionalLight position={[10, 10, 5]} intensity={1} color="#6366f1" />
+              <directionalLight position={[-10, -10, -5]} intensity={0.5} color="#a0a0a0" />
+              <Suspense fallback={null}>
+                <FloatingParticles Points={Points} PointMaterial={PointMaterial} useFrame={useFrame} random={randomLib} />
+                <AbstractShape Float={Float} useFrame={useFrame} position={[2, 1, -2]} rotation={[0.4, 0.2, 0.1]} scale={0.8} color="#6366f1" />
+                <AbstractShape Float={Float} useFrame={useFrame} position={[-2, -1, -1]} rotation={[-0.4, 0.5, 0.2]} scale={1.2} color="#ffffff" />
+                <AbstractShape Float={Float} useFrame={useFrame} position={[1, -2, -3]} rotation={[0.1, -0.6, 0.3]} scale={0.5} color="#6366f1" />
+              </Suspense>
+              <Preload all />
+            </Canvas>
+          </div>
+        );
+      };
           <AbstractShape position={[1, -2, -3]} rotation={[0.1, -0.6, 0.3]} scale={0.5} color="#6366f1" />
         </Suspense>
         <Preload all />

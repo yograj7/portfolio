@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
 
 const navLinks = [
   { id: 'home', title: 'Home' },
@@ -12,6 +11,15 @@ const navLinks = [
 const Navbar = () => {
   const [active, setActive] = useState('home');
   const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const navRef = useRef(null);
+  const [theme, setTheme] = useState(() => {
+    try {
+      return localStorage.getItem('theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'dark');
+    } catch (e) {
+      return 'dark';
+    }
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,6 +33,35 @@ const Navbar = () => {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    try {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+    } catch (e) {}
+  }, [theme]);
+
+  // Observe sections to update active nav link
+  useEffect(() => {
+    const sections = navLinks.map((l) => document.getElementById(l.id)).filter(Boolean);
+    if (!sections.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            const matched = navLinks.find((n) => n.id === id);
+            if (matched) setActive(matched.title);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    sections.forEach((s) => observer.observe(s));
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -43,49 +80,40 @@ const Navbar = () => {
         borderBottom: scrolled ? '1px solid var(--glass-border)' : 'none'
       }}
     >
-      <div className="max-w-7xl mx-auto w-full flex justify-between items-center">
-        <a
-          href="#home"
-          className="flex items-center gap-2"
-          onClick={() => {
-            setActive('home');
-            window.scrollTo(0, 0);
-          }}
-          style={{ textDecoration: 'none' }}
-        >
-          <p style={{
-            color: 'white',
-            fontSize: '1.5rem',
-            fontWeight: 'bold',
-            letterSpacing: '0.05em',
-            margin: 0
-          }}>
+      <div className="max-w-7xl mx-auto w-full flex justify-between items-center" ref={navRef}>
+        <a href="#home" className="brand-link" onClick={() => { setActive('Home'); window.scrollTo(0, 0); }}>
+          <p className="brand">
             Y<span className="accent-text">.Patil</span>
           </p>
         </a>
 
-        {/* Desktop Navigation */}
-        <ul className="list-none hidden sm:flex flex-row gap-8" style={{ display: 'flex', gap: '2rem', listStyle: 'none', margin: 0, padding: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <button
+            className="theme-toggle"
+            aria-pressed={theme === 'dark' ? 'true' : 'false'}
+            onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
+            title="Toggle theme"
+          >
+            {theme === 'dark' ? '☾' : '☼'}
+          </button>
+
+          <button
+            className="nav-toggle"
+            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen((s) => !s)}
+          >
+            <span className={`hamburger ${mobileOpen ? 'open' : ''}`} />
+          </button>
+        </div>
+
+        <ul className={`nav-links ${mobileOpen ? 'open' : ''}`}>
           {navLinks.map((link) => (
-            <li
-              key={link.id}
-              onClick={() => setActive(link.title)}
-              style={{
-                cursor: 'pointer',
-                fontSize: '1.125rem',
-                fontWeight: '500',
-                transition: 'color 0.3s'
-              }}
-            >
-              <a 
+            <li key={link.id}>
+              <a
                 href={`#${link.id}`}
-                style={{
-                  color: active === link.title ? 'white' : 'var(--text-secondary)',
-                  textDecoration: 'none',
-                  transition: 'color 0.3s'
-                }}
-                onMouseOver={(e) => e.target.style.color = 'var(--text-primary)'}
-                onMouseOut={(e) => e.target.style.color = active === link.title ? 'white' : 'var(--text-secondary)'}
+                className={`nav-link ${active === link.title ? 'active' : ''}`}
+                onClick={() => { setActive(link.title); setMobileOpen(false); }}
               >
                 {link.title}
               </a>

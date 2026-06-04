@@ -11,6 +11,16 @@
   --navbar-height: 80px;
 }
 
+/* Light theme */
+:root[data-theme="light"], :root[data-theme="light"] {
+  --bg-color: #f7f7fb;
+  --text-primary: #0b1220;
+  --text-secondary: #4b5563;
+  --accent-color: #4f46e5;
+  --glass-bg: rgba(255,255,255,0.7);
+  --glass-border: rgba(0,0,0,0.06);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -114,3 +124,90 @@ p {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent-color);
 }
+
+/* Skip link (visible when focused for keyboard users) */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+  width: auto;
+  height: auto;
+  padding: 0.5rem 1rem;
+  background: rgba(255,255,255,0.06);
+  color: var(--text-primary);
+  border-radius: 8px;
+  z-index: 9999;
+  text-decoration: none;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+}
+
+/* Canvas skeleton shown while Hero3D lazy loads */
+.canvas-skeleton {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(ellipse at center, rgba(99,102,241,0.06) 0%, rgba(0,0,0,0.7) 60%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Navbar styles */
+.brand-link { text-decoration: none; }
+.brand { color: white; font-size: 1.5rem; font-weight: 700; margin: 0; }
+.nav-toggle { display: none; background: transparent; border: none; cursor: pointer; }
+.theme-toggle { background: transparent; border: 1px solid var(--glass-border); color: var(--text-primary); padding: 0.4rem 0.6rem; border-radius: 8px; cursor: pointer; }
+.theme-toggle:hover, .theme-toggle:focus { transform: translateY(-2px); }
+.hamburger { width: 22px; height: 2px; background: var(--text-primary); display: block; position: relative; transition: transform 0.3s ease; }
+.hamburger::before, .hamburger::after { content: ''; position: absolute; left: 0; width: 22px; height: 2px; background: var(--text-primary); transition: transform 0.3s ease, top 0.3s ease; }
+.hamburger::before { top: -7px; }
+.hamburger::after { top: 7px; }
+.hamburger.open { background: transparent; }
+.hamburger.open::before { transform: rotate(45deg); top: 0; }
+.hamburger.open::after { transform: rotate(-45deg); top: 0; }
+
+.nav-links { display: flex; gap: 2rem; list-style: none; margin: 0; padding: 0; }
+.nav-links li { margin: 0; }
+.nav-link { color: var(--text-secondary); text-decoration: none; font-weight: 500; transition: color 0.2s, transform 0.15s; }
+.nav-link:hover, .nav-link:focus { color: var(--text-primary); transform: translateY(-2px); }
+.nav-link.active { color: white; }
+
+/* Mobile menu */
+@media (max-width: 640px) {
+  .nav-toggle { display: inline-flex; align-items: center; }
+  .nav-links { position: absolute; right: 1rem; top: var(--navbar-height); background: var(--glass-bg); backdrop-filter: blur(8px); border: 1px solid var(--glass-border); padding: 1rem; border-radius: 12px; flex-direction: column; display: none; }
+  .nav-links.open { display: flex; }
+}
+
+/* Icon buttons */
+.icon-button { padding: 0.75rem; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: white; transition: transform 0.25s, border-color 0.25s; border: 1px solid var(--glass-border); }
+.icon-button:hover, .icon-button:focus { transform: translateY(-6px); border-color: var(--accent-color); }
+
+/* Skill pills */
+.skill-pill { padding: 0.5rem 1rem; font-size: 0.9rem; border-radius: 20px; border: 1px solid var(--accent-color); }
+
+.cert-link { padding: 0.75rem 1.5rem; text-decoration: none; color: var(--text-secondary); transition: color 0.2s, border-color 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid var(--glass-border); }
+.cert-link:hover, .cert-link:focus { color: white; border-color: var(--accent-color); }
+
+/* Project card hover */
+.project-card { transition: transform 0.3s, box-shadow 0.3s; }
+.project-card:hover, .project-card:focus-within { transform: translateY(-10px); box-shadow: 0 10px 30px rgba(99, 102, 241, 0.1); }
+
+.project-cta { align-self: flex-start; color: var(--text-primary); text-decoration: none; border-bottom: 1px solid var(--accent-color); padding-bottom: 2px; font-weight: 500; transition: color 0.3s; }
+.project-cta:hover, .project-cta:focus { color: var(--accent-color); }
+
+/* Focus visible for accessibility */
+:focus { outline: none; }
+:focus-visible { outline: 3px solid rgba(99,102,241,0.25); outline-offset: 2px; }

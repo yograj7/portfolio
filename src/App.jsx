@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import Navbar from './components/Navbar';
-import Hero3D from './components/Hero3D';
+const Hero3D = lazy(() => import('./components/Hero3D'));
 import { Home, About, Resume, Projects, Contact } from './components/Sections';
 
 function App() {
@@ -10,13 +10,16 @@ function App() {
       <Navbar />
       
       {/* We need a wrapper to ensure content scrolls over the fixed canvas */}
-      <main style={{ position: 'relative', zIndex: 10 }}>
+      <main id="main-content" style={{ position: 'relative', zIndex: 10 }}>
         <Home />
         <About />
         <Resume />
         <Projects />
         <Contact />
       </main>
+      <Suspense fallback={<div className="canvas-skeleton" aria-hidden="true" />}> 
+        <Hero3D />
+      </Suspense>
     </>
   );
 }
