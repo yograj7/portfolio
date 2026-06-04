@@ -6,8 +6,10 @@ import { Home, About, Resume, Projects, Contact } from './components/Sections';
 function App() {
   return (
     <>
-      <Hero3D />
       <Navbar />
+      <Suspense fallback={<div className="canvas-skeleton" aria-hidden="true" />}> 
+        <Hero3D />
+      </Suspense>
       
       {/* We need a wrapper to ensure content scrolls over the fixed canvas */}
       <main id="main-content" style={{ position: 'relative', zIndex: 10 }}>
@@ -17,9 +19,6 @@ function App() {
         <Projects />
         <Contact />
       </main>
-      <Suspense fallback={<div className="canvas-skeleton" aria-hidden="true" />}> 
-        <Hero3D />
-      </Suspense>
     </>
   );
 }

@@ -1,19 +1,7 @@
 import React, { useState } from 'react';
 import { FaGithub, FaLinkedin, FaInstagram, FaDownload, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 
-// Animation Variants
-const fadeIn = {
-  hidden: { opacity: 0, y: 50 },
-  visible: (i = 1) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: 0.1 * i,
-      duration: 0.8,
-      ease: [0.25, 0.46, 0.45, 0.94],
-    },
-  }),
-};
+// (was animation variants for framer-motion; removed since we don't use framer-motion)
 
 const SectionWrapper = ({ id, children }) => {
   return (
@@ -45,14 +33,14 @@ export const Home = () => {
           Passionate about building software that solves business problems and uncovering hidden data stories.
           </p>
         
-          <div style={{ display: 'flex', gap: '1.5rem' }}>
-          <a href="https://github.com/yograj7" target="_blank" rel="noreferrer" className="glass-panel icon-button">
+          <div className="social-links">
+          <a href="https://github.com/yograj7" target="_blank" rel="noreferrer" className="glass-panel icon-button social-button github" aria-label="GitHub profile">
             <FaGithub size={24} />
           </a>
-          <a href="https://www.linkedin.com/in/yograj-patil-375418262/" target="_blank" rel="noreferrer" className="glass-panel icon-button">
+          <a href="https://www.linkedin.com/in/yograj-patil-375418262/" target="_blank" rel="noreferrer" className="glass-panel icon-button social-button linkedin" aria-label="LinkedIn profile">
             <FaLinkedin size={24} />
           </a>
-          <a href="https://www.instagram.com/_mr_yograj_patil_/" target="_blank" rel="noreferrer" className="glass-panel icon-button">
+          <a href="https://www.instagram.com/_mr_yograj_patil_/" target="_blank" rel="noreferrer" className="glass-panel icon-button social-button instagram" aria-label="Instagram profile">
             <FaInstagram size={24} />
           </a>
           </div>
@@ -64,13 +52,13 @@ export const Home = () => {
 export const About = () => {
   return (
     <SectionWrapper id="about">
-      <motion.div custom={1} variants={fadeIn} style={{ marginBottom: '3rem' }}>
+      <div style={{ marginBottom: '3rem' }}>
         <h2 className="gradient-text">About Me</h2>
-      </motion.div>
+      </div>
       
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '3rem' }}>
-        <motion.div custom={2} variants={fadeIn} className="glass-panel" style={{ padding: '2rem' }}>
-          <p style={{ marginBottom: '1.5rem', color: 'white' }}>
+        <div className="glass-panel" style={{ padding: '2rem' }}>
+          <p style={{ marginBottom: '1.5rem', color: 'var(--text-primary)' }}>
             To obtain an entry-level position in software development where I can apply my programming skills in C, C++, Java and SQL while continuously learning and contributing to organizational growth.
           </p>
           <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -79,9 +67,9 @@ export const About = () => {
             <li><strong>Language:</strong> English, Hindi & Marathi</li>
             <li><strong>Hobbies:</strong> Watching movies and listening to songs</li>
           </ul>
-        </motion.div>
+        </div>
 
-        <motion.div custom={3} variants={fadeIn} className="glass-panel" style={{ padding: '2rem' }}>
+        <div className="glass-panel" style={{ padding: '2rem' }}>
           <h3 style={{ marginBottom: '1.5rem', color: 'var(--accent-color)' }}>Skills & Tools</h3>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
              {['C', 'C++', 'Java', 'SQL', 'MS Word', 'MS Excel', 'PowerPoint', 'Power BI'].map((skill, index) => (
@@ -92,10 +80,10 @@ export const About = () => {
           </div>
           
           <div style={{ marginTop: '2rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ fontSize: '3rem', fontWeight: 'bold', color: 'white' }}>10+</div>
+            <div style={{ fontSize: '3rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>10+</div>
             <div style={{ color: 'var(--text-secondary)' }}>Projects<br/>Completed</div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </SectionWrapper>
   );
@@ -106,12 +94,12 @@ export const About = () => {
 export const Resume = () => {
   return (
     <SectionWrapper id="resume">
-      <motion.div custom={1} variants={fadeIn} style={{ marginBottom: '3rem' }}>
+      <div style={{ marginBottom: '3rem' }}>
         <h2 className="gradient-text">Resume & Certifications</h2>
-      </motion.div>
+      </div>
       
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', flexWrap: 'wrap' }}>
-        <motion.div custom={2} variants={fadeIn} className="glass-panel" style={{ padding: '2rem' }}>
+        <div className="glass-panel" style={{ padding: '2rem' }}>
           <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <FaDownload color="var(--accent-color)" /> Download Resume
           </h3>
@@ -121,24 +109,24 @@ export const Resume = () => {
           <a href="https://drive.google.com/file/d/14kbf7hmTKDdvXgWDkyI0Ke4TbHBERGom/view" target="_blank" rel="noreferrer" style={{ display: 'inline-block', padding: '0.75rem 1.5rem', background: 'var(--accent-color)', color: 'white', borderRadius: '8px', textDecoration: 'none', fontWeight: '600', transition: 'all 0.3s' }} onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.target.style.transform = 'scale(1)'}>
             View Full Resume
           </a>
-        </motion.div>
+        </div>
 
-        <motion.div custom={3} variants={fadeIn} className="glass-panel" style={{ padding: '2rem' }}>
+        <div className="glass-panel" style={{ padding: '2rem' }}>
           <h3 style={{ marginBottom: '1.5rem', color: 'var(--text-primary)' }}>Education</h3>
           <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <li style={{ borderLeft: '2px solid var(--accent-color)', paddingLeft: '1rem' }}>
-              <h4 style={{ color: 'white', fontSize: '1.1rem' }}>Bachelor of Engineering</h4>
+              <h4 style={{ color: 'var(--text-primary)', fontSize: '1.1rem' }}>Bachelor of Engineering</h4>
               <p style={{ fontSize: '0.9rem' }}>Sant Gadge Baba Amaravati University Amravati</p>
             </li>
             <li style={{ borderLeft: '2px solid rgba(255,255,255,0.2)', paddingLeft: '1rem' }}>
-              <h4 style={{ color: 'white', fontSize: '1.1rem' }}>Higher Secondary School</h4>
+              <h4 style={{ color: 'var(--text-primary)', fontSize: '1.1rem' }}>Higher Secondary School</h4>
               <p style={{ fontSize: '0.9rem' }}>Sant Gadge Baba Amaravati University Amravati</p>
             </li>
           </ul>
-        </motion.div>
+        </div>
       </div>
 
-      <motion.div custom={4} variants={fadeIn} style={{ marginTop: '3rem' }}>
+      <div style={{ marginTop: '3rem' }}>
         <h3 style={{ marginBottom: '1.5rem', color: 'var(--text-primary)' }}>Certifications</h3>
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
            {[
@@ -152,7 +140,7 @@ export const Resume = () => {
             </a>
            ))}
         </div>
-      </motion.div>
+      </div>
     </SectionWrapper>
   );
 };
@@ -193,7 +181,7 @@ export const Projects = () => {
           <div key={index} className="glass-panel project-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', height: '100%' }}>
             <div style={{ marginBottom: '1rem' }}>
               <span style={{ fontSize: '0.8rem', color: 'var(--accent-color)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '600' }}>{project.type}</span>
-              <h3 style={{ color: 'white', marginTop: '0.5rem', fontSize: '1.4rem' }}>{project.title}</h3>
+              <h3 style={{ color: 'var(--text-primary)', marginTop: '0.5rem', fontSize: '1.4rem' }}>{project.title}</h3>
             </div>
             {project.image && <img src={project.image} alt={`${project.title} screenshot`} style={{ width: '100%', height: '160px', objectFit: 'cover', borderRadius: '10px', marginBottom: '1rem' }} />}
             <p style={{ flex: 1, fontSize: '0.95rem', marginBottom: '2rem' }}>{project.desc}</p>
@@ -204,11 +192,11 @@ export const Projects = () => {
         ))}
       </div>
       
-      <motion.div custom={5} variants={fadeIn} style={{ marginTop: '3rem', textAlign: 'center' }}>
-        <a href="https://github.com/yograj7" target="_blank" rel="noreferrer" className="glass-panel" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', padding: '1rem 2rem', color: 'white', textDecoration: 'none', borderRadius: '30px', transition: 'all 0.3s' }} onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; }} onMouseOut={(e) => { e.currentTarget.style.background = 'var(--glass-bg)'; }}>
+      <div style={{ marginTop: '3rem', textAlign: 'center' }}>
+        <a href="https://github.com/yograj7" target="_blank" rel="noreferrer" className="glass-panel" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', padding: '1rem 2rem', color: 'var(--text-primary)', textDecoration: 'none', borderRadius: '30px', transition: 'all 0.3s' }} onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; }} onMouseOut={(e) => { e.currentTarget.style.background = 'var(--glass-bg)'; }}>
           <FaGithub size={20} /> More projects on Github
         </a>
-      </motion.div>
+      </div>
     </SectionWrapper>
   );
 };
@@ -241,7 +229,7 @@ export const Contact = () => {
       </div>
 
       <div className="glass-panel" style={{ padding: '3rem', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', maxWidth: '800px', margin: '0 auto' }}>
-        <p style={{ fontSize: '1.2rem', marginBottom: '1.5rem', color: 'white' }}>
+        <p style={{ fontSize: '1.2rem', marginBottom: '1.5rem', color: 'var(--text-primary)' }}>
           I am currently looking for new opportunities. Send a short message and I'll try my best to get back to you!
         </p>
 

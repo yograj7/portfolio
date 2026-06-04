@@ -66,30 +66,49 @@ const Navbar = () => {
     return () => observer.disconnect();
   }, []);
 
-  return (
-    <nav
-      className={`fixed w-full flex items-center py-5 top-0 z-50 transition-all duration-300 ${
-        scrolled ? 'bg-black/70 backdrop-blur-md shadow-lg shadow-indigo-500/10' : 'bg-transparent'
-      }`}
-      style={{
-        padding: '0 5%',
-        height: 'var(--navbar-height)',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        background: scrolled ? 'var(--glass-bg)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(16px)' : 'none',
-        borderBottom: scrolled ? '1px solid var(--glass-border)' : 'none'
-      }}
-    >
-      <div className="max-w-7xl mx-auto w-full flex justify-between items-center" ref={navRef}>
-        <a href="#home" className="brand-link" onClick={() => { setActive('Home'); window.scrollTo(0, 0); }}>
-          <p className="brand">
-            Y<span className="accent-text">.Patil</span>
-          </p>
-        </a>
+  // close mobile menu on outside clicks or Escape key
+  useEffect(() => {
+    const onDocClick = (ev) => {
+      if (!mobileOpen) return;
+      if (navRef.current && !navRef.current.contains(ev.target)) setMobileOpen(false);
+    };
+    const onEsc = (ev) => { if (ev.key === 'Escape') setMobileOpen(false); };
+    document.addEventListener('click', onDocClick);
+    document.addEventListener('keydown', onEsc);
+    return () => {
+      document.removeEventListener('click', onDocClick);
+      document.removeEventListener('keydown', onEsc);
+    };
+  }, [mobileOpen]);
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+  return (
+    <header className={`navbar ${scrolled ? 'scrolled' : ''}`} role="navigation" aria-label="Main Navigation">
+      <div className="nav-inner" ref={navRef}>
+        <div className="nav-left">
+          <a href="#home" className="brand" onClick={() => { setActive('Home'); window.scrollTo(0, 0); }}>
+            <span className="brand-mark">Y</span>
+            <span className="brand-text">Patil</span>
+          </a>
+        </div>
+
+        <nav className="nav-center" aria-hidden={mobileOpen ? 'false' : 'false'}>
+          <ul className={`nav-links ${mobileOpen ? 'open' : ''}`}>
+            {navLinks.map((link) => (
+              <li key={link.id}>
+                <a
+                  href={`#${link.id}`}
+                  className={`nav-link ${active === link.title ? 'active' : ''}`}
+                  aria-current={active === link.title ? 'page' : undefined}
+                  onClick={() => { setActive(link.title); setMobileOpen(false); }}
+                >
+                  {link.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div className="nav-right">
           <button
             className="theme-toggle"
             aria-pressed={theme === 'dark' ? 'true' : 'false'}
@@ -108,23 +127,20 @@ const Navbar = () => {
             <span className={`hamburger ${mobileOpen ? 'open' : ''}`} />
           </button>
         </div>
+      </div>
 
-        <ul className={`nav-links ${mobileOpen ? 'open' : ''}`}>
+      <div className={`mobile-overlay ${mobileOpen ? 'open' : ''}`} aria-hidden={!mobileOpen}>
+        <ul className="mobile-links">
           {navLinks.map((link) => (
             <li key={link.id}>
-              <a
-                href={`#${link.id}`}
-                className={`nav-link ${active === link.title ? 'active' : ''}`}
-                onClick={() => { setActive(link.title); setMobileOpen(false); }}
-              >
+              <a href={`#${link.id}`} className={`mobile-link ${active === link.title ? 'active' : ''}`} onClick={() => { setActive(link.title); setMobileOpen(false); }}>
                 {link.title}
               </a>
             </li>
           ))}
         </ul>
-
       </div>
-    </nav>
+    </header>
   );
 };
 
