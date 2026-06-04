@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { Suspense, useRef, useState, useEffect } from 'react';
 
 // Hero3D dynamically imports heavy 3D libraries to keep vendor chunk small

@@ -16,7 +16,7 @@ const Navbar = () => {
   const [theme, setTheme] = useState(() => {
     try {
       return localStorage.getItem('theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'dark');
-    } catch (e) {
+    } catch {
       return 'dark';
     }
   });
@@ -39,7 +39,9 @@ const Navbar = () => {
     try {
       document.documentElement.setAttribute('data-theme', theme);
       localStorage.setItem('theme', theme);
-    } catch (e) {}
+    } catch {
+      /* ignore */
+    }
   }, [theme]);
 
   // Observe sections to update active nav link
