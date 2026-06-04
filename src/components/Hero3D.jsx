@@ -1,13 +1,9 @@
-import { Suspense, useRef, useState, useEffect } from 'react';
+import React, { Suspense, useRef, useState, useEffect } from 'react';
 
-// Dynamically load three/fiber/drei to split vendor chunk
+// Hero3D dynamically imports heavy 3D libraries to keep vendor chunk small
 
-// These components will be created once the heavy modules are loaded
-const FloatingParticles = ({ Points, PointMaterial, useFrame, random, ...props }) => {
+const FloatingParticles = ({ Points, PointMaterial, useFrame, random, particleCount = 2000, ...props }) => {
   const ref = useRef();
-  const particleCount = typeof navigator !== 'undefined' && navigator.hardwareConcurrency
-    ? Math.min(5000, navigator.hardwareConcurrency * navigator.hardwareConcurrency)
-    : 2000;
   const [sphere] = useState(() => random.inSphere(new Float32Array(particleCount * 3), { radius: 1.5 }));
 
   useFrame((state, delta) => {
@@ -31,10 +27,9 @@ const FloatingParticles = ({ Points, PointMaterial, useFrame, random, ...props }
   );
 };
 
-// Abstract shapes floating in the background
 const AbstractShape = ({ Float, useFrame, position, rotation, scale, color }) => {
   const mesh = useRef();
-  
+
   useFrame((state, delta) => {
     if (!mesh.current) return;
     mesh.current.rotation.x += delta * 0.2;
@@ -45,8 +40,8 @@ const AbstractShape = ({ Float, useFrame, position, rotation, scale, color }) =>
     <Float speed={2} rotationIntensity={1} floatIntensity={2}>
       <mesh ref={mesh} position={position} rotation={rotation} scale={scale}>
         <icosahedronGeometry args={[1, 1]} />
-        <meshStandardMaterial 
-          color={color} 
+        <meshStandardMaterial
+          color={color}
           wireframe
           transparent
           opacity={0.15}
@@ -57,49 +52,44 @@ const AbstractShape = ({ Float, useFrame, position, rotation, scale, color }) =>
 };
 
 const Hero3D = () => {
+  const [mods, setMods] = useState(null);
+
   useEffect(() => {
-    // ensure small devicePixelRatio for performance
-    if (typeof window !== 'undefined') {
-      const Hero3D = () => {
-        const [mods, setMods] = useState(null);
+    let mounted = true;
+    Promise.all([
+      import('@react-three/fiber'),
+      import('@react-three/drei'),
+      import('maath/random/dist/maath-random.esm')
+    ]).then(([fiber, drei, random]) => {
+      if (mounted) setMods({ fiber, drei, random });
+    }).catch(() => {
+      // ignore
+    });
+    return () => { mounted = false; };
+  }, []);
 
-        useEffect(() => {
-          let mounted = true;
-          // dynamic import to split vendor chunk
-          Promise.all([
-            import('@react-three/fiber'),
-            import('@react-three/drei'),
-            import('maath/random/dist/maath-random.esm')
-          ]).then(([fiber, drei, random]) => {
-            if (mounted) setMods({ fiber, drei, random });
-          }).catch(() => {});
-          return () => { mounted = false; };
-        }, []);
+  if (!mods) return null;
 
-        if (!mods) return null;
+  const { Canvas, useFrame } = mods.fiber;
+  const { Points, PointMaterial, Preload, Float } = mods.drei;
+  const randomLib = mods.random;
 
-        const { Canvas, useFrame } = mods.fiber;
-        const { Points, PointMaterial, Preload, Float } = mods.drei;
-        const randomLib = mods.random;
+  // adapt particle count for device
+  const particleCount = typeof navigator !== 'undefined' && navigator.hardwareConcurrency
+    ? Math.min(5000, navigator.hardwareConcurrency * 800)
+    : 2000;
 
-        return (
-          <div className="canvas-container">
-            <Canvas camera={{ position: [0, 0, 3] }} frameloop="demand">
-              <ambientLight intensity={0.5} />
-              <directionalLight position={[10, 10, 5]} intensity={1} color="#6366f1" />
-              <directionalLight position={[-10, -10, -5]} intensity={0.5} color="#a0a0a0" />
-              <Suspense fallback={null}>
-                <FloatingParticles Points={Points} PointMaterial={PointMaterial} useFrame={useFrame} random={randomLib} />
-                <AbstractShape Float={Float} useFrame={useFrame} position={[2, 1, -2]} rotation={[0.4, 0.2, 0.1]} scale={0.8} color="#6366f1" />
-                <AbstractShape Float={Float} useFrame={useFrame} position={[-2, -1, -1]} rotation={[-0.4, 0.5, 0.2]} scale={1.2} color="#ffffff" />
-                <AbstractShape Float={Float} useFrame={useFrame} position={[1, -2, -3]} rotation={[0.1, -0.6, 0.3]} scale={0.5} color="#6366f1" />
-              </Suspense>
-              <Preload all />
-            </Canvas>
-          </div>
-        );
-      };
-          <AbstractShape position={[1, -2, -3]} rotation={[0.1, -0.6, 0.3]} scale={0.5} color="#6366f1" />
+  return (
+    <div className="canvas-container">
+      <Canvas camera={{ position: [0, 0, 3] }} frameloop="demand">
+        <ambientLight intensity={0.5} />
+        <directionalLight position={[10, 10, 5]} intensity={1} color="#6366f1" />
+        <directionalLight position={[-10, -10, -5]} intensity={0.5} color="#a0a0a0" />
+        <Suspense fallback={null}>
+          <FloatingParticles Points={Points} PointMaterial={PointMaterial} useFrame={useFrame} random={randomLib} particleCount={particleCount} />
+          <AbstractShape Float={Float} useFrame={useFrame} position={[2, 1, -2]} rotation={[0.4, 0.2, 0.1]} scale={0.8} color="#6366f1" />
+          <AbstractShape Float={Float} useFrame={useFrame} position={[-2, -1, -1]} rotation={[-0.4, 0.5, 0.2]} scale={1.2} color="#ffffff" />
+          <AbstractShape Float={Float} useFrame={useFrame} position={[1, -2, -3]} rotation={[0.1, -0.6, 0.3]} scale={0.5} color="#6366f1" />
         </Suspense>
         <Preload all />
       </Canvas>
